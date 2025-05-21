@@ -1,3 +1,8 @@
 Some text here
 and also here
 And here maybe
+There is some text here
+And also I replicate text twice in the next text line
+texttext
+This line contains no needles
+TextTexttExtteeextxxxtTexT

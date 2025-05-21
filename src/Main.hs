@@ -1,8 +1,9 @@
 import Data.Array
+import Data.Char
 import Data.List
 import System.IO
 import Control.Monad
-import System.Environment 
+import System.Environment
 import Distribution.Simple.BuildTarget (resolveBuildTargets)
 
 buildTable :: String -> Array Int Int
@@ -14,12 +15,10 @@ buildTable needle = listArray (0, n - 1) table
 
         build i j
             | i > n - 1 = []
-            | needle !! i == needle !! j = 
+            | needle !! i == needle !! j =
                 (j + 1) : build (i + 1) (j + 1)
             | j > 0 = build i (table !! (j - 1))
             | otherwise = 0 : build (i + 1) 0
-
--- runKMP :: String -> [String] -> IO
 
 searchInLine :: String -> String -> [Int]
 searchInLine needle haystack = search 0 0 []
@@ -39,14 +38,24 @@ searchInLine needle haystack = search 0 0 []
 
 highlightMatch :: [Int] -> Int -> Int -> String
 highlightMatch [] _ _ = []
-highlightMatch (pos:rest) last len = result  
+highlightMatch (pos:rest) last len = result
     where
         empties = replicate (pos - last) ' '
         marks = replicate len '^'
-        result = empties ++ marks ++ highlightMatch rest (pos + len) len 
+        result = empties ++ marks ++ highlightMatch rest (pos + len) len
+
+runKMP :: String -> [String] -> IO ()
+runKMP needle lines = mapM_ printMatch (zip [1..] lines)
+    where
+        printMatch (num, line) =
+            let pos = searchInLine needle (map toLower line)
+            in
+                (unless (null pos) $ do
+                        putStrLn $ show num ++ ": " ++ line
+                        putStrLn $ replicate (length (show num) + 2) ' ' ++ highlightMatch pos 0 (length needle))
 
 main = do
     (needle : filename : args) <- getArgs
 
     contents <- readFile filename
-    print (searchInLine needle (head (lines contents)))
+    runKMP (map toLower needle) (lines contents)
