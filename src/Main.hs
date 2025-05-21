@@ -3,6 +3,7 @@ import Data.List
 import System.IO
 import Control.Monad
 import System.Environment 
+import Distribution.Simple.BuildTarget (resolveBuildTargets)
 
 buildTable :: String -> Array Int Int
 buildTable [] = array (0, 0) []
@@ -18,8 +19,7 @@ buildTable needle = listArray (0, n - 1) table
             | j > 0 = build i (table !! (j - 1))
             | otherwise = 0 : build (i + 1) 0
 
--- runKMP :: String -> [String] -> Bool
--- runKMP needle lines = True
+-- runKMP :: String -> [String] -> IO
 
 searchInLine :: String -> String -> [Int]
 searchInLine needle haystack = search 0 0 []
@@ -36,6 +36,14 @@ searchInLine needle haystack = search 0 0 []
                     else search (i + 1) (j + 1) acc
             | j > 0 = search i (table ! (j - 1)) acc
             | otherwise = search (i + 1) 0 acc
+
+highlightMatch :: [Int] -> Int -> Int -> String
+highlightMatch [] _ _ = []
+highlightMatch (pos:rest) last len = result  
+    where
+        empties = replicate (pos - last) ' '
+        marks = replicate len '^'
+        result = empties ++ marks ++ highlightMatch rest (pos + len) len 
 
 main = do
     (needle : filename : args) <- getArgs
