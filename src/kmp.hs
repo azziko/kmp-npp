@@ -4,7 +4,6 @@ import Data.List
 import System.IO
 import Control.Monad
 import System.Environment
-import Distribution.Simple.BuildTarget (resolveBuildTargets)
 
 buildTable :: String -> Array Int Int
 buildTable [] = array (0, 0) []
