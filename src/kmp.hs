@@ -11,10 +11,11 @@ buildTable needle = table
     where
         n = length needle
         table = listArray (0, n - 1) (0:build 1 0)
+        needleArr = listArray (0, n - 1) needle
 
         build i j
             | i > n - 1 = []
-            | needle !! i == needle !! j =
+            | needleArr ! i == needleArr ! j =
                 (j + 1) : build (i + 1) (j + 1)
             | j > 0 = build i (table ! (j - 1))
             | otherwise = 0 : build (i + 1) 0
