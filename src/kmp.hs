@@ -58,7 +58,11 @@ runKMP needle lines = mapM_ printMatch (zip [1..] lines)
                         putStrLn $ replicate (length (show num) + 2) ' ' ++ highlightMatch pos 0 (length needle))
 
 main = do
-    (needle : filename : args) <- getArgs
+    args <- getArgs
 
-    contents <- readFile filename
-    runKMP (map toLower needle) (lines contents)
+    case args of
+        (needle : filename : _) -> do
+            contents <- readFile filename
+            runKMP (map toLower needle) (lines contents)
+        _ -> do
+            putStrLn "To run the program, provide all the necessary arguments: kmp <needle> <filename>"
