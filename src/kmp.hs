@@ -37,13 +37,15 @@ searchInLine table needle haystack = search 0 0 []
             | j > 0 = search i (table ! (j - 1)) acc
             | otherwise = search (i + 1) 0 acc
 
-highlightMatch :: [Int] -> Int -> Int -> String
-highlightMatch [] _ _ = []
-highlightMatch (pos:rest) last len = result
+highlightMatch :: [Int] -> Int -> String
+highlightMatch [] _ = []
+highlightMatch pos len = result
     where
-        empties = replicate (pos - last) ' '
-        marks = replicate len '^'
-        result = empties ++ marks ++ highlightMatch rest (pos + len) len
+        result = [doesMatch i | i <- [0 .. maximum pos + len]]
+
+        doesMatch i = if any (\pos -> i >= pos && i < pos + len) pos
+            then '^'
+            else ' '
 
 runKMP :: String -> [String] -> IO ()
 runKMP needle lines = mapM_ printMatch (zip [1..] lines)
@@ -55,7 +57,7 @@ runKMP needle lines = mapM_ printMatch (zip [1..] lines)
             in
                 (unless (null pos) $ do
                         putStrLn $ show num ++ ": " ++ line
-                        putStrLn $ replicate (length (show num) + 2) ' ' ++ highlightMatch pos 0 (length needle))
+                        putStrLn $ replicate (length (show num) + 2) ' ' ++ highlightMatch pos (length needle))
 
 main = do
     args <- getArgs
