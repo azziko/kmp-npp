@@ -20,15 +20,13 @@ buildTable needle = table
             | j > 0 = build i (table ! (j - 1))
             | otherwise = 0 : build (i + 1) 0
 
-searchInLine :: String -> String -> [Int]
-searchInLine needle haystack = search 0 0 []
+searchInLine :: Array Int Int -> String -> String -> [Int]
+searchInLine table needle haystack = search 0 0 []
     where
         n = length needle
         m = length haystack
         needleArr = listArray (0, n - 1) needle
         haystackArr = listArray (0, m - 1) haystack
-
-        table = buildTable needle
 
         search i j acc
             | i >= m = reverse acc
@@ -50,8 +48,10 @@ highlightMatch (pos:rest) last len = result
 runKMP :: String -> [String] -> IO ()
 runKMP needle lines = mapM_ printMatch (zip [1..] lines)
     where
+        table = buildTable needle
+
         printMatch (num, line) =
-            let pos = searchInLine needle (map toLower line)
+            let pos = searchInLine table needle (map toLower line)
             in
                 (unless (null pos) $ do
                         putStrLn $ show num ++ ": " ++ line
